@@ -1,0 +1,63 @@
+<?php
+
+// $Id: cbispackagelight.install,v 1.2.2.3 2009/10/25 01:32:30 gzfelix Exp $
+
+function visitbookingformdynamic_schema() {
+	$schema['visitbookingformdynamic'] = array(
+		'description' => t('Visit Booking form extension to {node}'),
+		'fields' => array(
+			'nid' => array('type' => 'int', 'not null' => TRUE, 'default' => -1),
+			'vid' => array('type' => 'int', 'not null' => TRUE, 'default' => -1),
+			'frm_destination' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ""),
+			'frm_parameters' => array('type' => 'text', 'not null' => TRUE, 'default' => ""),
+			'frm_links' => array('type' => 'text', 'not null' => TRUE, 'default' => "")
+		),
+		'primary key' => array('nid', 'vid'),
+		'nid' => array('nid'),
+		'vid' => array('vid')
+	);
+
+	return $schema;
+}
+
+function visitbookingformdynamic_install() {
+	$ret = drupal_install_schema('visitbookingformdynamic');
+	return $ret;
+}
+
+function visitbookingformdynamic_uninstall() {
+	$ret = drupal_uninstall_schema('visitbookingformdynamic');
+	return $ret;
+}
+
+function visitbookingformdynamic_update_6000() {
+	$ret = array();
+	db_query("insert into {visitbookingformdynamic} (vid, nid, frm_parameters, frm_destination, frm_links) (SELECT * FROM {content_type_bookingform})");
+	db_query("update {node} set type = 'visitbookingformdynamic' where type = 'bookingform'");
+	return $ret;
+}
+/*
+function cbispackagelight_update_6001() {
+	$ret = array();
+ 	db_add_field($ret, 'cbispackagelight_entities', 'imageid',
+    	array('type' => 'int', 'not null' => TRUE, 'unsigned' => TRUE, 'default' => 0));
+	return $ret;
+}
+
+function cbispackagelight_update_6002() {
+	$ret = array();
+ 	db_drop_field($ret, 'cbispackagelight', 'imageid');
+	return $ret;
+}
+function cbispackagelight_update_6003() {
+	$ret = array();
+ 	db_add_field($ret, 'cbispackagelight', 'last_sync_check',
+    	array('type' => 'varchar', 'length' => 32, 'not null' => TRUE, 'default' => ""));
+	return $ret;
+}
+
+function cbispackagelight_update_6004() {
+	$ret = array();
+	db_add_field($ret, 'cbispackagelight', 'updatenode', array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''));
+	return $ret;		
+}*/

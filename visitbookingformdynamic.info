@@ -1,0 +1,6 @@
+;$Id$
+name = Visit Dynamic Booking Form Module
+description = This creates a dynamic booking form node type that can be placed on the site
+core = 6.x
+package = Visit Technology Group
+dependencies[] = jquery_ui

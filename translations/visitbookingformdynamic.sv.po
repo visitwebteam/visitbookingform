@@ -1,0 +1,159 @@
+# $Id$
+#
+# Swedish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  visitbookingformdynamic.module: n/a
+#  cbispackagelight.install,v 1.2.2.3 2009/10/25 01:32:30 gzfelix
+#  visitbookingformdynamic.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-02-11 17:17+0100\n"
+"PO-Revision-Date: 2010-02-11 17:17+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Swedish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; plural=;\n"
+
+#: visitbookingformdynamic.module:65
+msgid "Guests in room"
+msgstr "Gäster i rum"
+
+#: visitbookingformdynamic.module:67
+msgid "Label string for each room. %s will be replaced with room number."
+msgstr "Etikett för varje rum. %s kommer ersättas med rummets nummer."
+
+#: visitbookingformdynamic.module:72
+msgid "Age of child"
+msgstr "Barnets ålder"
+
+#: visitbookingformdynamic.module:74
+msgid "Label string for each child. %s will be replaced with child number."
+msgstr "Etikett för varje barn. %s kommer ersättas med barnets nummer."
+
+#: visitbookingformdynamic.module:79
+#: visitbookingformdynamic.module:86
+msgid "Number of adults"
+msgstr "Antal vuxna"
+
+#: visitbookingformdynamic.module:81
+msgid "Number of rooms"
+msgstr "Antal rum"
+
+#: visitbookingformdynamic.module:88
+msgid "Number of adults per room"
+msgstr "Antal vuxna per rum"
+
+#: visitbookingformdynamic.module:93
+msgid "Number of children"
+msgstr "Antal barn"
+
+#: visitbookingformdynamic.module:95
+msgid "Number of children per room"
+msgstr "Antal barn per rum"
+
+#: visitbookingformdynamic.module:100
+msgid "Child age start"
+msgstr "Barn ålder startar"
+
+#: visitbookingformdynamic.module:102
+msgid "Child age selector starts with"
+msgstr "Barn ålder startar vid"
+
+#: visitbookingformdynamic.module:107
+msgid "Child age end"
+msgstr "Barn ålder slutar vid"
+
+#: visitbookingformdynamic.module:109
+msgid "Child age selector ends with"
+msgstr "Barn ålder slut"
+
+#: visitbookingformdynamic.module:129
+msgid "Form destination"
+msgstr "Formulär postas till"
+
+#: visitbookingformdynamic.module:136
+msgid "Form parameters"
+msgstr "Formulärparametrar"
+
+#: visitbookingformdynamic.module:143
+msgid "Links"
+msgstr "Länkar"
+
+#: visitbookingformdynamic.module:154
+msgid "Visit Dynamic Booking Form"
+msgstr ""
+
+#: visitbookingformdynamic.module:156
+msgid "A Visit Dynamic Booking Form node"
+msgstr ""
+
+#: visitbookingformdynamic.module:158
+msgid "Title"
+msgstr "Titel"
+
+#: visitbookingformdynamic.module:160
+msgid "Content"
+msgstr "Innehåll"
+
+#: visitbookingformdynamic.module:312
+msgid "No children"
+msgstr "Inga barn"
+
+#: visitbookingformdynamic.module:314
+msgid "1 room"
+msgid_plural "@count rooms"
+msgstr[0] "1 rum"
+msgstr[1] "@count rum"
+
+#: visitbookingformdynamic.module:317
+msgid "1 adult"
+msgid_plural "@count adults"
+msgstr[0] "En vuxen"
+msgstr[1] "@count vuxna"
+
+#: visitbookingformdynamic.module:320
+msgid "1 child"
+msgid_plural "@count children"
+msgstr[0] "Ett barn"
+msgstr[1] "@count barn"
+
+#: visitbookingformdynamic.module:323
+msgid "1 year"
+msgid_plural "@count years"
+msgstr[0] "1 år"
+msgstr[1] "@count år"
+
+#: visitbookingformdynamic.module:16
+msgid "administer visitbookingformdynamic"
+msgstr ""
+
+#: visitbookingformdynamic.module:48
+msgid "Dynamic booking form"
+msgstr ""
+
+#: visitbookingformdynamic.module:49
+msgid "Settings for the dynamic booking form"
+msgstr ""
+
+#: visitbookingformdynamic.install:7
+msgid "Visit Booking form extension to {node}"
+msgstr ""
+
+#: visitbookingformdynamic.info:0
+msgid "Visit Dynamic Booking Form Module"
+msgstr ""
+
+#: visitbookingformdynamic.info:0
+msgid "This creates a dynamic booking form node type that can be placed on the site"
+msgstr ""
+
+#: visitbookingformdynamic.info:0
+msgid "Visit Technology Group"
+msgstr "Visit Technology Group"
+

@@ -1,0 +1,378 @@
+<?php 
+function visitbookingformdynamic_insert($node) {
+	drupal_write_record('visitbookingformdynamic', $node);
+}
+
+function visitbookingformdynamic_update($node) {
+	drupal_write_record('visitbookingformdynamic', $node, array('nid', 'vid'));
+}
+
+function visitbookingformdynamic_load($node) {
+	$additions = db_fetch_object(db_query('SELECT p.* FROM {visitbookingformdynamic} p JOIN {node} n ON p.nid = n.nid AND p.vid = n.vid WHERE p.nid=%d AND p.vid=%d', $node->nid, $node->vid));
+	return $additions;
+}
+
+function visitbookingformdynamic_perm() {
+	return array('administer visitbookingformdynamic');
+}
+
+function visitbookingformdynamic_access($op, $node, $account) {
+	switch ($op) {
+		case 'create':
+		case 'update':
+		case 'delete':
+			return user_access('administer visitbookingformdynamic', $account) || user_access('administer content', $account);
+	}
+}
+
+function visitbookingformdynamic_nodeapi(&$node, $op) {
+	if ($node->type == 'visitbookingformdynamic') {
+		switch($op) {
+			case 'delete revision':
+				db_query(db_rewrite_sql('DELETE FROM {visitbookingformdynamic} m, {node} n WHERE nid=%d AND vid=%d'), $node->nid, $node->vid);
+				break;
+			case 'insert':
+			case 'update':
+			case 'delete':
+				#visitbookingformdynamic_clear_cache();
+				break;
+				
+		}
+	}
+}
+
+function visitbookingformdynamic_menu() {
+	$items = array();
+	
+	$items['admin/settings/visitbookingformdynamic'] = array(
+    'title' => 'Dynamic booking form',
+    'description' => 'Settings for the dynamic booking form',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('visitbookingformdynamic_admin'),
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_NORMAL_ITEM,
+   );
+
+  return $items;
+}
+
+function visitbookingformdynamic_admin() {
+	$form = array();
+	$lang = i18n_get_lang();
+
+	$form['visitbookingformdynamic_gueststring'.$lang] = array(
+		'#type' => 'textfield',
+		'#title' => t("Guests in room"),
+		'#default_value' => variable_get('visitbookingformdynamic_gueststring'.$lang, "Guests in room %s"),
+		'#description' => t("Label string for each room. %s will be replaced with room number."),
+		'#required' => TRUE,
+	);
+	$form['visitbookingformdynamic_childagestring'.$lang] = array(
+		'#type' => 'textfield',
+		'#title' => t("Age of child"),
+		'#default_value' => variable_get('visitbookingformdynamic_childagestring'.$lang, "Child age"),
+		'#description' => t("Label string for each child. %s will be replaced with child number."),
+		'#required' => TRUE,
+	);
+	$form['visitbookingformdynamic_norooms'] = array(
+		'#type' => 'textfield',
+		'#title' => t("Number of adults"),
+		'#default_value' => variable_get('visitbookingformdynamic_norooms', 5),
+		'#description' => t("Number of rooms"),
+		'#required' => TRUE,
+	);
+	$form['visitbookingformdynamic_noadults'] = array(
+		'#type' => 'textfield',
+		'#title' => t("Number of adults"),
+		'#default_value' => variable_get('visitbookingformdynamic_noadults', 5),
+		'#description' => t("Number of adults per room"),
+		'#required' => TRUE,
+	);
+	$form['visitbookingformdynamic_nochildren'] = array(
+		'#type' => 'textfield',
+		'#title' => t("Number of children"),
+		'#default_value' => variable_get('visitbookingformdynamic_nochildren', 5),
+		'#description' => t("Number of children per room"),
+		'#required' => TRUE,
+	);
+	$form['visitbookingformdynamic_childage_start'] = array(
+		'#type' => 'textfield',
+		'#title' => t("Child age start"),
+		'#default_value' => variable_get('visitbookingformdynamic_childage_start', 1),
+		'#description' => t("Child age selector starts with"),
+		'#required' => TRUE,
+	);
+	$form['visitbookingformdynamic_childage_end'] = array(
+		'#type' => 'textfield',
+		'#title' => t("Child age end"),
+		'#default_value' => variable_get('visitbookingformdynamic_childage_end', 17),
+		'#description' => t("Child age selector ends with"),
+		'#required' => TRUE,
+	);
+	
+	return system_settings_form($form);
+}
+
+function visitbookingformdynamic_form(&$node) {
+	$type = node_get_types('type', $node);
+	
+	$form['title'] = array(
+			'#type' => 'textfield',
+			'#title' => check_plain($type->title_label),
+			'#required' => FALSE,
+			'#default_value' => $node->title,
+			'#weight' => -5,
+		);
+		
+	$form['frm_destination'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Form destination'),
+		'#default_value' => $node->frm_destination,
+		'#weight' => -3,
+	);
+
+	$form['frm_parameters'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Form parameters'),
+		'#default_value' => $node->frm_parameters,
+		'#weight' => -2,
+	);
+		
+	$form['frm_links'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Links'),
+		'#default_value' => $node->frm_links,
+		'#weight' => -1,
+	);	
+	
+	return $form;
+}
+
+function visitbookingformdynamic_node_info($node = NULL) {
+	return array(
+		'visitbookingformdynamic' => array(
+			'name' => t('Visit Dynamic Booking Form'),
+			'module' => 'visitbookingformdynamic',
+			'description' => t('A Visit Dynamic Booking Form node'),
+			'has_title' => TRUE,
+			'title_label' => t('Title'),
+			'has_body' => FALSE,
+			'body_label' => t('Content'),
+			'locked' => TRUE,
+		),
+	);
+}
+
+
+function visitbookingformdynamic_render_booking_links($body) {
+	$content = "<ul class='linklist'>";
+	$rows = explode("\n", $body);
+	foreach ($rows as $row) {
+		$cells = explode("|", $row);
+		$str = "<li class='".$cells[0]."'>";
+		$str .= "<span class='icon'></span>";
+		$str .= visitbookingformdynamic_render_booking_links_link($cells[1], isset($cells[2]) ? $cells[2] : "");
+		$str .= "</li>";
+		$content .= $str;
+	}
+	$content .= "</ul>";
+	return $content;
+}
+
+function visitbookingformdynamic_render_booking_links_link($text, $url) {
+	if (strlen($url) > 0) {
+		$text = l($text, trim($url));
+	}
+	return $text;
+}
+
+
+function visitbookingformdynamic_render_booking_form($body) {
+	$modpath = drupal_get_path('module', 'visitbookingformdynamic');
+	drupal_add_js($modpath .'/visitbookingformdynamic.js');
+
+	$content = "";
+	$rows = explode("\n", $body);
+	foreach ($rows as $row) {
+		$cells = explode("|", $row);
+		foreach ($cells as $i => $cell) {
+			$cells[$i] = trim($cell);
+		}
+		$str = "<label>".$cells[0].":<br />";
+		$nolabel = false;
+		switch ($cells[1]) {
+			case "taxonomy":
+				$str .= visitbookingformdynamic_render_booking_form_taxonomy($cells[2], $cells[3]);
+				break;
+					
+			case "geotree":
+				$str .= visitbookingformdynamic_render_booking_form_geotree($cells[2], isset($cells[3]) ? $cells[3] : "");
+				break;
+			
+			case "package":
+				$str .= visitbookingformdynamic_render_booking_form_package($cells[2], isset($cells[3]) ? $cells[3] : "");
+				break;
+
+			case "date":
+				$str .= visitbookingformdynamic_render_booking_form_date($cells[2]);
+				break;
+
+			case "rooms":
+				$str .= visitbookingformdynamic_render_booking_form_rooms($cells[2]);
+				$nolabel = true;	
+				break;
+				
+			case "submit":
+				$str = visitbookingformdynamic_render_booking_form_button($cells[0]);
+				break;
+
+			case "hidden":
+				$str = "<input type='hidden' name='".$cells[2]."' value='".$cells[3]."' />";
+				$nolabel = true;
+				break;
+			default:
+				$nolabel = true;
+				$str = "";
+				break;
+		}
+		if (!$nolabel)
+			$str .= "</label>";
+		$content .= $str;
+	}
+	return $content;
+}
+
+function visitbookingformdynamic_render_booking_form_taxonomy($name, $vocid) {
+	$terms = taxonomy_get_tree($vocid);
+	$selects = array();	
+	foreach ($terms as $term) {		
+		if (strcasecmp($term->name, "hidden") != 0) {
+			$selects[] = array("name" => $term->name, "id" => $term->tid, "depth" => $term->depth);
+		}
+	}
+	return visitbookingformdynamic_render_booking_form_select($name, $selects);
+}
+
+function visitbookingformdynamic_render_booking_form_geotree($name, $emptytext = "") {
+	$lang = i18n_get_lang();
+	$tree = variable_get("cbisproducts_geotree".$lang, array());
+	if (strlen($emptytext) > 0) {
+		array_unshift($tree, array("id" => 0, "name" => $emptytext, "depth" => 0));
+	}
+	return visitbookingformdynamic_render_booking_form_select($name, $tree);
+}
+
+function visitbookingformdynamic_render_booking_form_package($name, $emptytext = "") {
+	if (module_exists("cbispackagelight")) {
+		$packages = cbispackagelight_packages();
+		$selects = array();
+		if (strlen($emptytext) > 0) {
+			$selects[] = array("id" => 0, "name" => $emptytext, "depth" => 0);
+		}
+		foreach ($packages as $term) {		
+			$selects[] = array("name" => $term->title, "id" => $term->packageid, "depth" => 0);
+		}
+		
+		return visitbookingformdynamic_render_booking_form_select($name, $selects);
+		
+	}
+	return "";
+}
+
+function visitbookingformdynamic_render_booking_form_select($name, $terms, $val = false, $noname = false, $class = "") {
+	if ($val === false) {
+		$val = isset($_GET[$name]) ? $_GET[$name] : "";
+	}
+	$str = "<select ".(!$noname ? "name='".$name."'" : "")." id='select_".$name."' class='".$class."'>";
+	foreach ($terms as $term) {
+		$str .= "<option value='".$term["id"]."'".($term["id"] == $val ? " selected='selected'" : "").">".str_repeat("&nbsp;&nbsp;", $term["depth"]).$term["name"]."</option>";
+	}
+	$str .= "</select>";
+	return $str;
+}
+
+function visitbookingformdynamic_render_booking_form_date($name) {
+	$time = ($name == "datefrom" ? time() : strtotime("+1 day")); 
+	$str = "<span class='datepicker'><input type='text' name='".$name."' id='date_".$name."' class='datepicker' value='".(isset($_GET[$name]) ? $_GET[$name] : date("Y-m-d", $time))."' /><span class='icon'></span></span>";
+	return $str;
+}
+
+function visitbookingformdynamic_render_booking_form_button($text) {
+	$str = "<input type='submit' value='".$text."' />";
+	return $str;
+}
+
+function visitbookingformdynamic_render_booking_form_rooms($name) {
+	$lang = i18n_get_lang();
+	$rooms = array();
+	$adults = array();
+	$children = array();
+	$config = visitbookingformdynamic_parse_pr();
+
+	$children[] = array("id" => 0, "depth" => 0, "name" => t("No children"));
+	for ($i = 1; $i <= variable_get("visitbookingformdynamic_norooms", 5); $i++) {
+		$rooms[] = array("id" => $i, "depth" => 0, "name" => format_plural($i, "1 room", "@count rooms"));
+	}
+	for ($i = 1; $i <= variable_get("visitbookingformdynamic_noadults", 5); $i++) {
+		$adults[] = array("id" => $i, "depth" => 0, "name" => format_plural($i, "1 adult", "@count adults"));
+	}
+	for ($i = 1; $i <= variable_get("visitbookingformdynamic_nochildren", 5); $i++) {
+		$children[] = array("id" => $i, "depth" => 0, "name" => format_plural($i, "1 child", "@count children"));
+	}
+	for ($i = variable_get('visitbookingformdynamic_childage_start', 1); $i <= variable_get('visitbookingformdynamic_childage_end', 17); $i++) {
+		$childage[] = array("id" => $i, "depth" => 0, "name" => format_plural($i, "1 year", "@count years"));
+	}
+	
+	
+	$roomcount = count($config);
+	$str = visitbookingformdynamic_render_booking_form_select("rooms", $rooms, $roomcount, true);
+	$str .= "</label>";
+	
+	foreach ($rooms as $i => $room) {
+		$j = $i+1;
+		$str .= "<div id='room".$j."' class='room ".($j > $roomcount ? "hidden" : "")."'>";
+		$str .= "<label id='labelroom".$j."'>".sprintf(variable_get('visitbookingformdynamic_gueststring'.$lang, "Guests in room %s"), $j);
+		$str .= visitbookingformdynamic_render_booking_form_select("adults_".$j, $adults, isset($config[$i]['adults']) ? $config[$i]['adults'] : 2, true, "adults");
+		$childcount = isset($config[$i]['children']) ? count($config[$i]['children']) : 0;
+		$str .= visitbookingformdynamic_render_booking_form_select("children_".$j, $children, $childcount, true, "children");
+		$str .= "</label>";
+		for ($k = 1; $k <= count($children); $k++) {
+			$str .= "<label id='childage_".$j."_".$k."' class='childagelabel ".(($k) > $childcount ? "hidden" : "")."'>".sprintf(variable_get('visitbookingformdynamic_childagestring'.$lang, "Child age"), ($k));	
+			$str .= visitbookingformdynamic_render_booking_form_select("childage_".$j."_".$k, $childage, isset($config[$i]['children'][$k-1]) ? $config[$i]['children'][$k-1] : 0, true, "childage");
+			$str .= "</label>";
+		}
+		$str .= "</div>";
+	}
+	return $str;
+}
+
+function visitbookingformdynamic_parse_pr($str = "") {
+	if (strlen($str) == 0) {
+		$str = $_GET['pr'];
+	}
+
+	$rooms = array();
+	$parts = split("r", $str);
+	foreach ($parts as $part)
+	{
+		$part = trim($part);
+		if (strlen($part) == 0)
+			continue;
+		
+		$room = array("adults" => 0, "children" => array());
+		$attends = preg_split("/[ac]/", $part);
+		$attending = count($attends);
+		if ($attending > 1)
+		{
+			for ($i = 1; $i < $attending; $i++)
+			{
+				$room["children"][] = $attends[$i];
+			}
+		}
+		$room["adults"] = $attends[0];
+		$rooms[] = $room;
+	}
+	#$arr = array("children" => $children, "adults" => $adults, "age" => $childage, "rooms" => $room);
+	return $rooms;
+}
+
